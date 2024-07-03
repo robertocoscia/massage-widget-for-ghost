@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trova il Massaggio Perfetto per Te</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+        .card { border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+        h2, h3 { margin-top: 0; }
+        .checkbox-group { margin-bottom: 15px; }
+        .checkbox-group label { display: block; margin-bottom: 5px; }
+        button { background-color: #007bff; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+        ul { padding-left: 20px; }
+        .massage-type { margin-bottom: 10px; }
+        .massage-type h4 { margin: 0; }
+        .massage-type p { margin-top: 5px; font-style: italic; }
+        .category { margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h2>Trova il Massaggio Perfetto per Te</h2>
+            <p>Seleziona i tuoi sintomi o esigenze:</p>
+            <div id="symptoms"></div>
+            <button onclick="getRecommendations()">Ottieni Raccomandazioni</button>
+        </div>
+        <div id="recommendations" class="card" style="display: none;"></div>
+    </div>
+
+    <script>
+        const massageTypes = {
+            'Rilassamento e Benessere': {
+                'Massaggio svedese': 'Tecnica classica che utilizza movimenti lunghi e fluidi per rilassare i muscoli e migliorare la circolazione.',
+                'Massaggio aromaterapico': 'Combina tecniche di massaggio con oli essenziali per promuovere il rilassamento e il benessere.',
+                'Massaggio con pietre calde': 'Utilizza pietre laviche riscaldate per rilassare i muscoli e alleviare la tensione.',
+                'Massaggio ayurvedico': 'Tecnica indiana che bilancia i dosha del corpo per promuovere la salute e il benessere generale.'
+            },
+            'Terapeutico e Curativo': {
+                'Massaggio sportivo': 'Focalizzato sui gruppi muscolari utilizzati nello sport, aiuta a prevenire infortuni e migliorare le prestazioni.',
+                'Massaggio deep tissue': 'Lavora gli strati più profondi del tessuto muscolare per alleviare la tensione cronica.',
+                'Massaggio miofasciale': 'Si concentra sul rilascio delle restrizioni nel tessuto connettivo (fascia) per alleviare il dolore e migliorare la mobilità.',
+                'Massaggio shiatsu': 'Tecnica giapponese che utilizza la pressione delle dita sui punti di agopuntura per bilanciare il flusso di energia.',
+                'Massaggio osteopatico': 'Combina tecniche di manipolazione per trattare problemi muscoloscheletrici e migliorare la funzione del corpo.'
+            },
+            'Circolazione e Drenaggio': {
+                'Massaggio linfodrenante': 'Stimola il sistema linfatico per ridurre il gonfiore e migliorare la circolazione.',
+                'Riflessologia plantare': 'Applica pressione a punti specifici dei piedi per influenzare la salute di varie parti del corpo.',
+                'Massaggio thailandese': 'Combina compressioni e allungamenti per migliorare la flessibilità e la circolazione.'
+            },
+            'Gravidanza e Postparto': {
+                'Massaggio prenatale': 'Adattato per le donne in gravidanza, aiuta ad alleviare il mal di schiena, il gonfiore e lo stress.',
+                'Massaggio postnatale': 'Aiuta il corpo a riprendersi dopo il parto, alleviando la tensione muscolare e promuovendo il rilassamento.'
+            }
+        };
+
+        const symptomMassageMap = {
+            'Stress e tensione': ['Massaggio svedese', 'Massaggio aromaterapico', 'Massaggio con pietre calde', 'Massaggio ayurvedico'],
+            'Dolore muscolare': ['Massaggio sportivo', 'Massaggio deep tissue', 'Massaggio miofasciale', 'Massaggio shiatsu'],
+            'Problemi circolatori': ['Massaggio linfodrenante', 'Riflessologia plantare', 'Massaggio thailandese'],
+            'Mal di schiena': ['Massaggio shiatsu', 'Massaggio deep tissue', 'Massaggio osteopatico'],
+            'Insonnia': ['Massaggio rilassante', 'Massaggio aromaterapico', 'Massaggio ayurvedico'],
+            'Gravidanza': ['Massaggio prenatale', 'Massaggio linfodrenante', 'Riflessologia plantare'],
+            'Recupero sportivo': ['Massaggio sportivo', 'Massaggio deep tissue', 'Massaggio miofasciale'],
+            'Emicrania': ['Massaggio shiatsu', 'Riflessologia plantare', 'Massaggio ayurvedico'],
+            'Rigidità articolare': ['Massaggio thailandese', 'Massaggio osteopatico', 'Massaggio miofasciale']
+        };
+
+        function createSymptomCheckboxes() {
+            const symptomsDiv = document.getElementById('symptoms');
+            Object.keys(symptomMassageMap).forEach(symptom => {
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = symptom;
+                checkbox.name = symptom;
+
+                const label = document.createElement('label');
+                label.htmlFor = symptom;
+                label.appendChild(document.createTextNode(symptom));
+
+                const div = document.createElement('div');
+                div.className = 'checkbox-group';
+                div.appendChild(checkbox);
+                div.appendChild(label);
+
+                symptomsDiv.appendChild(div);
+            });
+        }
+
+        function getRecommendations() {
+            const selectedSymptoms = Object.keys(symptomMassageMap).filter(symptom => 
+                document.getElementById(symptom).checked
+            );
+
+            const allRecommendations = selectedSymptoms.flatMap(symptom => symptomMassageMap[symptom]);
+            const uniqueRecommendations = [...new Set(allRecommendations)];
+
+            const recommendationsDiv = document.getElementById('recommendations');
+            recommendationsDiv.innerHTML = '';
+            recommendationsDiv.style.display = 'block';
+
+            if (uniqueRecommendations.length > 0) {
+                const header = document.createElement('h3');
+                header.textContent = 'Massaggi Raccomandati:';
+                recommendationsDiv.appendChild(header);
+
+                Object.entries(massageTypes).forEach(([category, massages]) => {
+                    const categoryRecommendations = uniqueRecommendations.filter(rec => massages.hasOwnProperty(rec));
+                    if (categoryRecommendations.length > 0) {
+                        const categoryDiv = document.createElement('div');
+                        categoryDiv.className = 'category';
+                        const categoryHeader = document.createElement('h4');
+                        categoryHeader.textContent = category;
+                        categoryDiv.appendChild(categoryHeader);
+
+                        categoryRecommendations.forEach(rec => {
+                            const massageDiv = document.createElement('div');
+                            massageDiv.className = 'massage-type';
+                            const massageName = document.createElement('h4');
+                            massageName.textContent = rec;
+                            const massageDescription = document.createElement('p');
+                            massageDescription.textContent = massages[rec];
+                            massageDiv.appendChild(massageName);
+                            massageDiv.appendChild(massageDescription);
+                            categoryDiv.appendChild(massageDiv);
+                        });
+
+                        recommendationsDiv.appendChild(categoryDiv);
+                    }
+                });
+            } else {
+                recommendationsDiv.textContent = 'Nessun massaggio raccomandato. Per favore seleziona almeno un sintomo.';
+            }
+        }
+
+        createSymptomCheckboxes();
+    </script>
+</body>
+</html>
